@@ -22,10 +22,14 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    axios.get("/api/places").then(response => {
+    axios.get("/api/places")
+    .then(response => {
       // console.log(response);
       this.setState({places: response.data});
-    });
+    })
+    .catch(err => {
+      this.setState({ favorites: response.data });
+    })
     axios.get("/api/favs").then(response => {
       this.setState({favorites: response.data});
     });
