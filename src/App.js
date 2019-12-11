@@ -1,26 +1,68 @@
 import React from 'react';
-import logo from './logo.svg';
+import PlacesView from "./components/PlacesView";
+import axios from "axios";
 import './reset.css';
 
-function App() {
+//Components
+import AddPlace from './components/AddPlace';
+
+//TOTAL POINTS - 21
+//Compare to the rubric for this
+
+class App extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+      places: [],
+      favorites: [],
+      currentView: "places"
+    };
+    this.updatePlaces = this.updatePlaces.bind(this);
+    this.updateFavorites = this.updateFavorites.bind(this);
+  }
+
+  componentDidMount(){
+    axios.get("/api/places").then(response => {
+      // console.log(response);
+      this.setState({places: response.data});
+    });
+    axios.get("/api/favs").then(response => {
+      this.setState({favorites: response.data});
+    });
+  }
+
+  updatePlaces(newPlaces){
+    this.setState({places: newPlaces});
+  }
+
+  updateFavorites(newFavorites){
+    this.setState({favorites: newFavorites});
+  }
+
+  render() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <div>
+      <button onClick={() => this.setState({currentView: "faves"})}
+      >Favorites</button>
+      <button onClick={() => this.setState({currentView: "places"})}>
+        Places</button>
+      {this.state.currentView === "places"
+        ? (
+        <div className="App">
+        <AddPlace updatePlaces={this.updatePlaces}/>
+        <PlacesView 
+        updateFavorites={this.updateFavorites}
+        places={this.state.places} />
+       </div>
+        ): (
+       <PlacesView 
+       showAddToFavButton={false}
+       places={this.state.favorites}/>
+       )
+      } 
+  </div>
+  )
+}
 }
 
 export default App;
